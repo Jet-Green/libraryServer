@@ -19,7 +19,7 @@ function deleteBookById(request, response) {
 
 function getBookById(request, response) {
     const books = getBooks();
-    const bookId = request.query.id;
+    const bookId = request.body.id;
 
     books.find({
         id: bookId

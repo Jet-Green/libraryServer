@@ -2,7 +2,7 @@ let express = require('express')
 let cors = require('cors')
 
 const corsOptions = {
-    origin: 'http://localhost:8080',
+    origin: '*',
 }
 
 // const {
@@ -22,8 +22,7 @@ const booksMethods = require('./middlewares/books')
 
 app.get('/api/books/get-all', booksMethods.getAllBooks)
 app.post('/api/books/delete-by-id', booksMethods.deleteBookById)
-// id must be provided in query
-app.get('/api/books', booksMethods.getBookById)
+app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/create', booksMethods.createBook)
 app.put('/api/books/update', booksMethods.updateBook)
 app.put('/api/books/change-state', booksMethods.changeBooksState)
