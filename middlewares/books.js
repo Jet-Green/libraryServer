@@ -40,6 +40,8 @@ function createBook(request, response) {
 }
 
 function updateBook(request, response) {
+    const books = getBooks();
+
     let setupOptions = request.body.setupOptions;
     let id = request.body.id;
     console.log(id, setupOptions)
@@ -54,6 +56,7 @@ function updateBook(request, response) {
 
 function changeBooksState(req, res) {
     const books = getBooks()
+
     const bookflow = getBookflow()
     const users = getUsers()
 
@@ -134,6 +137,7 @@ function changeBooksState(req, res) {
 
 function clearBooks(request, response) {
     const books = getBooks()
+
     return;
     books.deleteMany({})
         .then((r) => console.log('clear books ', r))
