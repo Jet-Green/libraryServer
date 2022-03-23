@@ -18,50 +18,32 @@ app.use(express.urlencoded({
 app.use(express.json())
 
 
-const {
-    getAllBooks,
-    deleteBookById,
-    getBookById,
-    createBook,
-    updateBook,
-    changeBooksState,
-    clearBooks
-} = require('./middlewares/books')
+const booksMethods = require('./middlewares/books')
 
-app.get('/api/books/get-all', getAllBooks)
-app.post('/api/books/delete-by-id', deleteBookById)
+app.get('/api/books/get-all', booksMethods.getAllBooks)
+app.post('/api/books/delete-by-id', booksMethods.deleteBookById)
 // id must be provided in query
-app.get('/api/books', getBookById)
-app.post('/api/books/create', createBook)
-app.put('/api/books/update', updateBook)
-app.put('/api/books/change-state', changeBooksState)
-app.get('/api/books/clear', clearBooks) // disabled for security
+app.get('/api/books', booksMethods.getBookById)
+app.post('/api/books/create', booksMethods.createBook)
+app.put('/api/books/update', booksMethods.updateBook)
+app.put('/api/books/change-state', booksMethods.changeBooksState)
+app.get('/api/books/clear', booksMethods.clearBooks) // disabled for security
 
 
-const {
-    getAllBookflow,
-    createBookflow,
-    clearBookflow
-} = require('./middlewares/bookflow')
+const bookflowMethods = require('./middlewares/bookflow')
 
-app.get('/api/bookflow/get-all', getAllBookflow)
-app.post('/api/bookflow/create', createBookflow)
-app.get('/api/bookflow/clear', clearBookflow) // disabled for security
+app.get('/api/bookflow/get-all', bookflowMethods.getAllBookflow)
+app.post('/api/bookflow/create', bookflowMethods.createBookflow)
+app.get('/api/bookflow/clear', bookflowMethods.clearBookflow) // disabled for security
 
 
-const {
-    getAllUsers,
-    createUser,
-    clearUsers,
-    updateUser,
-    getUserByEmail
-} = require('./middlewares/users')
+const userMethods = require('./middlewares/users')
 
-app.get('/api/users/get-all', getAllUsers)
-app.post('/api/users/create', createUser)
-app.get('/api/users/clear', clearUsers) // disabled for security
-app.put('/api/users/update', updateUser)
-app.post('/api/users/get-by-email', getUserByEmail)
+app.get('/api/users/get-all', userMethods.getAllUsers)
+app.post('/api/users/create', userMethods.createUser)
+app.get('/api/users/clear', userMethods.clearUsers) // disabled for security
+app.put('/api/users/update', userMethods.updateUser)
+app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
 const PORT = 3000
