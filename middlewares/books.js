@@ -1,3 +1,4 @@
+const { response } = require('express');
 let { getBooks, getBookflow, getUsers } = require('../mongo')
 
 function getAllBooks(request, response) {
@@ -13,7 +14,10 @@ function deleteBookById(request, response) {
     let id = request.body.id
 
     books.deleteOne({ Id: { $eq: id } })
-        .then((r) => console.log(`Delete book with Id ${id} `, r))
+        .then((r) => {
+            console.log(`Delete book with Id ${id} `, r)
+            response.send(r)
+        })
         .catch((err) => console.error('Cannot delete book with error', err))
 }
 
@@ -54,7 +58,7 @@ function updateBook(request, response) {
         .catch((err) => console.error('update book with error: ', err))
 }
 
-function changeBooksState(req, res) {
+function changeBooksState(req, response) {
     const books = getBooks()
 
     const bookflow = getBookflow()
@@ -84,6 +88,7 @@ function changeBooksState(req, res) {
                 upsert: false
             }).then((r) => {
                 console.log('update book ', r)
+                response.send(r)
             }).catch((err) => { console.error(err) })
         } else if (eventType == 'give') {
             // UPDATE USER
@@ -104,6 +109,7 @@ function changeBooksState(req, res) {
                 upsert: false
             }).then((r) => {
                 console.log('update book ', r)
+                response.send(r)
             }).catch((err) => { console.error(err) })
         } else if (eventType == 'return') {
             // UPDATE USER
@@ -124,6 +130,7 @@ function changeBooksState(req, res) {
                 upsert: false
             }).then((r) => {
                 console.log('update book ', r)
+                response.send(r)
             }).catch((err) => { console.error(err) })
         }
     }
