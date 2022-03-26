@@ -107,6 +107,10 @@ async function changeBooksState(req, response) {
                 console.log('update book ', r)
                 response.send(r)
             }).catch((err) => { console.error(err) })
+
+            bookflow.insertOne(event)
+                .then((r) => { console.log('create bookflow e ', r) })
+                .catch((err) => { console.error(err) })
         } else if (eventType == 'give' && currentBookStatus !== 'Выдана') {
             // UPDATE USER
             users.updateOne(
@@ -128,6 +132,10 @@ async function changeBooksState(req, response) {
                 console.log('update book ', r)
                 response.send(r)
             }).catch((err) => { console.error(err) })
+
+            bookflow.insertOne(event)
+                .then((r) => { console.log('create bookflow e ', r) })
+                .catch((err) => { console.error(err) })
         } else if (eventType == 'return' && currentBookStatus !== 'На месте') {
             // UPDATE USER
             users.updateOne(
@@ -149,14 +157,12 @@ async function changeBooksState(req, response) {
                 console.log('update book ', r)
                 response.send(r)
             }).catch((err) => { console.error(err) })
+
+            bookflow.insertOne(event)
+                .then((r) => { console.log('create bookflow e ', r) })
+                .catch((err) => { console.error(err) })
         }
     }
-
-    // CREATE BOOKFLOW
-    bookflow.insertOne(event)
-        .then((r) => { console.log('create bookflow e ', r) })
-        .catch((err) => { console.error(err) })
-
 }
 
 function clearBooks(request, response) {
