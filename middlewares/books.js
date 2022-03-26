@@ -151,6 +151,27 @@ function clearBooks(request, response) {
         .catch((err) => console.error(err))
 }
 
+function unreserveAllBooks(request, response) {
+    const books = getBooks()
+
+    books.updateMany(
+        {},
+        {
+            $set:
+            {
+                "Status": "На месте",
+                "DateOfGivenOut": "",
+                "TemporaryOwner": "",
+                "ReservedQueue": ""
+            }
+        },
+        { upsert: false })
+        .then((result) => response.send(result))
+        .catch(err => {
+            response.send(err)
+        })
+}
+
 module.exports = {
     getAllBooks,
     deleteBookById,
@@ -158,5 +179,6 @@ module.exports = {
     createBook,
     updateBook,
     changeBooksState,
-    clearBooks
+    clearBooks,
+    unreserveAllBooks
 }
