@@ -1,5 +1,21 @@
-const { response } = require('express');
 let { getBooks, getBookflow, getUsers } = require('../mongo')
+
+function checkVariable(collection, query, variableToCheck, value) {
+    return collection.find(query).toArray()
+        .then(result => {
+            return result[0][variableToCheck] === value;
+        })
+        .catch(err => console.error('cannot find', err))
+}
+
+function getVariable(collection, query, variable) {
+    return collection.find(query).toArray()
+        .then(result => {
+            return result[0][variable];
+        })
+        .catch(err => console.error('cannot find', err))
+}
+
 
 function getAllBooks(request, response) {
     // send all books
@@ -58,7 +74,7 @@ function updateBook(request, response) {
         .catch((err) => console.error('update book with error: ', err))
 }
 
-function changeBooksState(req, response) {
+async function changeBooksState(req, response) {
     const books = getBooks()
 
     const bookflow = getBookflow()
@@ -67,9 +83,10 @@ function changeBooksState(req, response) {
     let eventType = req.body.eventType;
     let event = req.body.e;
     console.log(req.body)
-
+    let currentBookStatus = await getVariable(books, { Id: { $eq: req.body.e.BookId } }, 'Status')
+    console.log(currentBookStatus)
     if (eventType != null || eventType != undefined) {
-        if (eventType == 'reserve') {
+        if (eventType == 'reserve' && currentBookStatus !== "Зарезервирована") {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
@@ -90,7 +107,7 @@ function changeBooksState(req, response) {
                 console.log('update book ', r)
                 response.send(r)
             }).catch((err) => { console.error(err) })
-        } else if (eventType == 'give') {
+        } else if (eventType == 'give' && currentBookStatus !== 'Выдана') {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
@@ -111,7 +128,7 @@ function changeBooksState(req, response) {
                 console.log('update book ', r)
                 response.send(r)
             }).catch((err) => { console.error(err) })
-        } else if (eventType == 'return') {
+        } else if (eventType == 'return' && currentBookStatus !== 'На месте') {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
