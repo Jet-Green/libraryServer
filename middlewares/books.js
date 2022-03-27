@@ -93,7 +93,9 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "ReservedQueue": event.UserEmail, "DateOfReserved": event.TimeStamp } }, {
                 upsert: false
-            }).catch((err) => { console.error(err) })
+            })
+                .then((res) => response.send('OK'))
+                .catch((err) => { console.error(err) })
 
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
@@ -113,7 +115,9 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "TemporaryOwner": event.UserEmail, "DateOfGivenOut": event.TimeStamp } }, {
                 upsert: false
-            }).catch((err) => { console.error(err) })
+            })
+                .then((res) => response.send('OK'))
+                .catch((err) => { console.error(err) })
 
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
@@ -133,9 +137,11 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "TemporaryOwner": '', "DateOfGivenOut": '', "ReservedQueue": '', "DateOfReserved": '' } }, {
                 upsert: false
-            }).catch((err) => {
-                console.error('cannot update book, error: ', err)
             })
+                .then((res) => response.send('OK'))
+                .catch((err) => {
+                    console.error('cannot update book, error: ', err)
+                })
 
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
