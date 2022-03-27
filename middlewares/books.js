@@ -13,12 +13,11 @@ function getVariable(collection, query, variable) {
         .then(result => {
             return result[0][variable];
         })
-        .catch(err => console.error('cannot find', err))
+        .catch(err => console.error('cannot find variable, error: ', err))
 }
 
 
 function getAllBooks(request, response) {
-    // send all books
     const books = getBooks()
     books.find({}).toArray(function (err, documents) {
         response.send(JSON.stringify(documents));
@@ -31,10 +30,9 @@ function deleteBookById(request, response) {
 
     books.deleteOne({ Id: { $eq: id } })
         .then((r) => {
-            console.log(`Delete book with Id ${id} `, r)
             response.send(r)
         })
-        .catch((err) => console.error('Cannot delete book with error', err))
+        .catch((err) => console.error('Cannot delete book, error: ', err))
 }
 
 function getBookById(request, response) {
@@ -43,20 +41,16 @@ function getBookById(request, response) {
 
     books.find({
         id: bookId
+    }).toArray(function (err, documents) {
+        response.send(JSON.stringify(documents));
     })
-        .toArray(function (err, documents) {
-            response.send(JSON.stringify(documents));
-        })
 }
 
 function createBook(request, response) {
     const books = getBooks();
 
     let book = request.body;
-    books.insertOne(book)
-        .then((r) => response.send(r))
-        .catch((err) => console.error('create book with error: ', err))
-
+    books.insertOne(book).catch((err) => console.error('cannot create book, error: ', err))
 }
 
 function updateBook(request, response) {
@@ -69,9 +63,7 @@ function updateBook(request, response) {
         { 'Id': { $eq: id } },
         setupOptions,
         { upsert: false }
-    )
-        .then((r) => console.log('Update book ', r))
-        .catch((err) => console.error('update book with error: ', err))
+    ).catch((err) => console.error('cannot update book, error: ', err))
 }
 
 async function changeBooksState(req, response) {
@@ -82,9 +74,9 @@ async function changeBooksState(req, response) {
 
     let eventType = req.body.eventType;
     let event = req.body.e;
-    console.log(req.body)
+
     let currentBookStatus = await getVariable(books, { Id: { $eq: req.body.e.BookId } }, 'Status')
-    console.log(currentBookStatus)
+
     if (eventType != null || eventType != undefined) {
         if (eventType == 'reserve' && currentBookStatus !== "Зарезервирована") {
             // UPDATE USER
@@ -92,10 +84,8 @@ async function changeBooksState(req, response) {
                 { "Contacts.Email": { $eq: event.UserEmail } },
                 { $set: { 'CurrentReservedBooks': event.BookId } },
                 { upsert: false }
-            ).then(function (r) {
-                console.log('user succesfully updated', r)
-            }).catch(err => {
-                console.error(err)
+            ).catch(err => {
+                console.error('cannot update user, error: ', err)
             })
 
             // UPDATE BOOK
@@ -103,24 +93,19 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "ReservedQueue": event.UserEmail, "DateOfReserved": event.TimeStamp } }, {
                 upsert: false
-            }).then((r) => {
-                console.log('update book ', r)
-                response.send(r)
             }).catch((err) => { console.error(err) })
 
-            bookflow.insertOne(event)
-                .then((r) => { console.log('create bookflow e ', r) })
-                .catch((err) => { console.error(err) })
+            bookflow.insertOne(event).catch((err) => {
+                console.error('cannot create bookflow, error: ', err)
+            })
         } else if (eventType == 'give' && currentBookStatus !== 'Выдана') {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
                 { $set: { 'CurrentTakenBooks': event.BookId } },
                 { upsert: false }
-            ).then(function (r) {
-                console.log('user succesfully updated', r)
-            }).catch(err => {
-                console.error(err)
+            ).catch(err => {
+                console.error('cannot update user, error: ', err)
             })
 
             // UPDATE BOOK
@@ -128,24 +113,19 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "TemporaryOwner": event.UserEmail, "DateOfGivenOut": event.TimeStamp } }, {
                 upsert: false
-            }).then((r) => {
-                console.log('update book ', r)
-                response.send(r)
             }).catch((err) => { console.error(err) })
 
-            bookflow.insertOne(event)
-                .then((r) => { console.log('create bookflow e ', r) })
-                .catch((err) => { console.error(err) })
+            bookflow.insertOne(event).catch((err) => {
+                console.error('cannot create bookflow, error: ', err)
+            })
         } else if (eventType == 'return' && currentBookStatus !== 'На месте') {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
                 { $set: { 'CurrentTakenBooks': '' } },
                 { upsert: false }
-            ).then(function (r) {
-                console.log('user succesfully updated', r)
-            }).catch(err => {
-                console.error(err)
+            ).catch(err => {
+                console.error('cannot update user, error: ', err)
             })
 
             // UPDATE BOOK
@@ -153,14 +133,13 @@ async function changeBooksState(req, response) {
                 'Id': { $eq: event.BookId }
             }, { $set: { "Status": event.BookStatus, "TemporaryOwner": '', "DateOfGivenOut": '', "ReservedQueue": '', "DateOfReserved": '' } }, {
                 upsert: false
-            }).then((r) => {
-                console.log('update book ', r)
-                response.send(r)
-            }).catch((err) => { console.error(err) })
+            }).catch((err) => {
+                console.error('cannot update book, error: ', err)
+            })
 
-            bookflow.insertOne(event)
-                .then((r) => { console.log('create bookflow e ', r) })
-                .catch((err) => { console.error(err) })
+            bookflow.insertOne(event).catch((err) => {
+                console.error('cannot create bookflow, error: ', err)
+            })
         }
     }
 }
@@ -198,9 +177,8 @@ function unreserveAllBooks(request, response) {
             }
         },
         { upsert: false })
-        .then((result) => response.send(result))
         .catch(err => {
-            response.send(err)
+            console.error('cannot unreserve all books, error:', err)
         })
 }
 

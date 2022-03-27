@@ -11,13 +11,7 @@ function getAllUsers(requset, response) {
 function createUser(request, response) {
     const users = getUsers()
 
-    users.insertOne(request.body).then((r) => {
-        console.log('user created', r)
-        response.send('OK')
-    }).catch((err) => {
-        console.error(err)
-        response.send(err)
-    })
+    users.insertOne(request.body).catch((err) => { console.error('cannot create user, error: ', err) })
 }
 
 function clearUsers(request, response) {
@@ -49,7 +43,7 @@ function updateUser(request, response) {
         setupOptions,
         { upsert: false }
     ).then(function (r) {
-        console.log('user succesfully updated', r)
+        // console.log('user succesfully updated', r)
         response.send(r)
     }).catch(err => {
         console.error(err)
@@ -67,10 +61,9 @@ function getUserByEmail(req, res) {
             $eq: Email
         }
     }).then(function (user) {
-        console.log("send user to client: ", user)
         res.send(user)
     }).catch(function (err) {
-        console.error(err)
+        console.error('cannot get user by email, error: ', err)
     });
 }
 
