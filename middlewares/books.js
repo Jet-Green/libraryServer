@@ -104,7 +104,7 @@ async function changeBooksState(req, response) {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
-                { $set: { 'CurrentTakenBooks': event.BookId } },
+                { $set: { 'CurrentTakenBooks': event.BookId, 'CurrentReservedBooks': '' } },
                 { upsert: false }
             ).catch(err => {
                 console.error('cannot update user, error: ', err)
