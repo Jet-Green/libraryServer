@@ -113,7 +113,7 @@ async function changeBooksState(req, response) {
             // UPDATE BOOK
             books.updateOne({
                 'Id': { $eq: event.BookId }
-            }, { $set: { "Status": event.BookStatus, "TemporaryOwner": event.UserEmail, "DateOfGivenOut": event.TimeStamp } }, {
+            }, { $set: { "Status": event.BookStatus, "TemporaryOwner": event.UserEmail, "DateOfGivenOut": event.TimeStamp, 'ReservedQueue': '', 'DateOfReserved': '' } }, {
                 upsert: false
             })
                 .then((res) => response.send('OK'))
