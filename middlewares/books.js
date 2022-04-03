@@ -78,7 +78,9 @@ async function changeBooksState(req, response) {
     let currentBookStatus = await getVariable(books, { Id: { $eq: req.body.e.BookId } }, 'Status')
 
     if (eventType != null || eventType != undefined) {
-        if (eventType == 'reserve' && currentBookStatus !== "Зарезервирована") {
+        if (eventType == 'reserve'
+            //  && currentBookStatus !== "Зарезервирована"
+        ) {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
@@ -100,7 +102,9 @@ async function changeBooksState(req, response) {
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
             })
-        } else if (eventType == 'give' && currentBookStatus !== 'Выдана') {
+        } else if (eventType == 'give'
+            //  && currentBookStatus !== 'Выдана'
+        ) {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
@@ -109,6 +113,7 @@ async function changeBooksState(req, response) {
             ).catch(err => {
                 console.error('cannot update user, error: ', err)
             })
+
 
             // UPDATE BOOK
             books.updateOne({
@@ -122,7 +127,9 @@ async function changeBooksState(req, response) {
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
             })
-        } else if (eventType == 'return' && currentBookStatus !== 'На месте') {
+        } else if (eventType == 'return'
+            //  && currentBookStatus !== 'На месте'
+        ) {
             // UPDATE USER
             users.updateOne(
                 { "Contacts.Email": { $eq: event.UserEmail } },
