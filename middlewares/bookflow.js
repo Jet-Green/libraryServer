@@ -9,7 +9,6 @@ function getAllBookflow(request, response) {
 
 function createBookflow(request, response) {
     bookflow.insertOne(request.body)
-        .then((r) => console.log('create bookfow', r))
         .catch((err) => console.error(err))
 }
 

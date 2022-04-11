@@ -58,7 +58,7 @@ function updateBook(request, response) {
 
     let setupOptions = request.body.setupOptions;
     let id = request.body.id;
-    console.log(id, setupOptions)
+
     books.updateOne(
         { 'Id': { $eq: id } },
         setupOptions,
