@@ -1,17 +1,19 @@
 let express = require('express')
 let cors = require('cors')
+const helmet = require("helmet");
+
 
 const corsOptions = {
-    origin: '*',
+    "origin": 'http://localhost:8080/'
 }
 
-// const {
-//     response
-// } = require('express');
 const app = express()
 
-
-app.use(cors(corsOptions))
+app.use(helmet())
+app.use(cors({
+    origin: 'http://localhost:8080',
+}
+))
 app.use(express.urlencoded({
     extended: true
 }))
