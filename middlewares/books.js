@@ -1,4 +1,8 @@
-let { getBooks, getBookflow, getUsers } = require('../mongo')
+let {
+    getBooks,
+    getBookflow,
+    getUsers
+} = require('../mongo')
 
 function checkVariable(collection, query, variableToCheck, value) {
     return collection.find(query).toArray()
@@ -28,7 +32,11 @@ function deleteBookById(request, response) {
     const books = getBooks();
     let id = request.body.id
 
-    books.deleteOne({ Id: { $eq: id } })
+    books.deleteOne({
+            Id: {
+                $eq: id
+            }
+        })
         .then((r) => {
             response.send(r)
         })
@@ -36,21 +44,20 @@ function deleteBookById(request, response) {
 }
 
 function getBookById(request, response) {
-    const books = getBooks();
-    const bookId = request.body.id;
 
-    books.find({
-        id: bookId
+    getBooks().find({
+        Id: Number(request.body.id)
     }).toArray(function (err, documents) {
+
         response.send(JSON.stringify(documents));
     })
 }
 
 function createBook(request, response) {
-    const books = getBooks();
 
-    let book = request.body;
-    books.insertOne(book).catch((err) => console.error('cannot create book, error: ', err))
+    getBooks()
+        .insertOne(request.body)
+        .catch((err) => console.error('cannot create book, error: ', err))
 }
 
 function updateBook(request, response) {
@@ -59,10 +66,14 @@ function updateBook(request, response) {
     let setupOptions = request.body.setupOptions;
     let id = request.body.id;
 
-    books.updateOne(
-        { 'Id': { $eq: id } },
-        setupOptions,
-        { upsert: false }
+    books.updateOne({
+            'Id': {
+                $eq: id
+            }
+        },
+        setupOptions, {
+            upsert: false
+        }
     ).catch((err) => console.error('cannot update book, error: ', err))
 }
 
@@ -75,29 +86,49 @@ async function changeBooksState(req, response) {
     let eventType = req.body.eventType;
     let event = req.body.e;
 
-    let currentBookStatus = await getVariable(books, { Id: { $eq: req.body.e.BookId } }, 'Status')
+    let currentBookStatus = await getVariable(books, {
+        Id: {
+            $eq: req.body.e.BookId
+        }
+    }, 'Status')
 
     if (eventType != null || eventType != undefined) {
         if (eventType == 'reserve'
             //  && currentBookStatus !== "Зарезервирована"
         ) {
             // UPDATE USER
-            users.updateOne(
-                { "Contacts.Email": { $eq: event.UserEmail } },
-                { $set: { 'CurrentReservedBooks': event.BookId } },
-                { upsert: false }
-            ).catch(err => {
+            users.updateOne({
+                "Contacts.Email": {
+                    $eq: event.UserEmail
+                }
+            }, {
+                $set: {
+                    'CurrentReservedBooks': event.BookId
+                }
+            }, {
+                upsert: false
+            }).catch(err => {
                 console.error('cannot update user, error: ', err)
             })
 
             // UPDATE BOOK
             books.updateOne({
-                'Id': { $eq: event.BookId }
-            }, { $set: { "Status": event.BookStatus, "ReservedQueue": event.UserEmail, "DateOfReserved": event.TimeStamp } }, {
-                upsert: false
-            })
+                    'Id': {
+                        $eq: event.BookId
+                    }
+                }, {
+                    $set: {
+                        "Status": event.BookStatus,
+                        "ReservedQueue": event.UserEmail,
+                        "DateOfReserved": event.TimeStamp
+                    }
+                }, {
+                    upsert: false
+                })
                 .then((res) => response.send('OK'))
-                .catch((err) => { console.error(err) })
+                .catch((err) => {
+                    console.error(err)
+                })
 
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
@@ -106,23 +137,42 @@ async function changeBooksState(req, response) {
             //  && currentBookStatus !== 'Выдана'
         ) {
             // UPDATE USER
-            users.updateOne(
-                { "Contacts.Email": { $eq: event.UserEmail } },
-                { $set: { 'CurrentTakenBooks': event.BookId, 'CurrentReservedBooks': '' } },
-                { upsert: false }
-            ).catch(err => {
+            users.updateOne({
+                "Contacts.Email": {
+                    $eq: event.UserEmail
+                }
+            }, {
+                $set: {
+                    'CurrentTakenBooks': event.BookId,
+                    'CurrentReservedBooks': ''
+                }
+            }, {
+                upsert: false
+            }).catch(err => {
                 console.error('cannot update user, error: ', err)
             })
 
 
             // UPDATE BOOK
             books.updateOne({
-                'Id': { $eq: event.BookId }
-            }, { $set: { "Status": event.BookStatus, "TemporaryOwner": event.UserEmail, "DateOfGivenOut": event.TimeStamp, 'ReservedQueue': '', 'DateOfReserved': '' } }, {
-                upsert: false
-            })
+                    'Id': {
+                        $eq: event.BookId
+                    }
+                }, {
+                    $set: {
+                        "Status": event.BookStatus,
+                        "TemporaryOwner": event.UserEmail,
+                        "DateOfGivenOut": event.TimeStamp,
+                        'ReservedQueue': '',
+                        'DateOfReserved': ''
+                    }
+                }, {
+                    upsert: false
+                })
                 .then((res) => response.send('OK'))
-                .catch((err) => { console.error(err) })
+                .catch((err) => {
+                    console.error(err)
+                })
 
             bookflow.insertOne(event).catch((err) => {
                 console.error('cannot create bookflow, error: ', err)
@@ -131,20 +181,36 @@ async function changeBooksState(req, response) {
             //  && currentBookStatus !== 'На месте'
         ) {
             // UPDATE USER
-            users.updateOne(
-                { "Contacts.Email": { $eq: event.UserEmail } },
-                { $set: { 'CurrentTakenBooks': '' } },
-                { upsert: false }
-            ).catch(err => {
+            users.updateOne({
+                "Contacts.Email": {
+                    $eq: event.UserEmail
+                }
+            }, {
+                $set: {
+                    'CurrentTakenBooks': ''
+                }
+            }, {
+                upsert: false
+            }).catch(err => {
                 console.error('cannot update user, error: ', err)
             })
 
             // UPDATE BOOK
             books.updateOne({
-                'Id': { $eq: event.BookId }
-            }, { $set: { "Status": event.BookStatus, "TemporaryOwner": '', "DateOfGivenOut": '', "ReservedQueue": '', "DateOfReserved": '' } }, {
-                upsert: false
-            })
+                    'Id': {
+                        $eq: event.BookId
+                    }
+                }, {
+                    $set: {
+                        "Status": event.BookStatus,
+                        "TemporaryOwner": '',
+                        "DateOfGivenOut": '',
+                        "ReservedQueue": '',
+                        "DateOfReserved": ''
+                    }
+                }, {
+                    upsert: false
+                })
                 .then((res) => response.send('OK'))
                 .catch((err) => {
                     console.error('cannot update book, error: ', err)
@@ -169,27 +235,24 @@ function clearBooks(request, response) {
 function unreserveAllBooks(request, response) {
     const books = getBooks()
     let now = Date.now()
-    books.updateMany(
-        {
-            $expr:
-            {
+    books.updateMany({
+            $expr: {
                 $lt: [
                     1000 * 60 * 60 * 24 * 3,
                     now - Number('$DateOfReserved')
                 ]
             }
-        },
-        {
-            $set:
-            {
+        }, {
+            $set: {
                 "Status": "На месте",
                 "DateOfGivenOut": "",
                 "TemporaryOwner": "",
                 "ReservedQueue": "",
                 "DateOfReserved": ""
             }
-        },
-        { upsert: false })
+        }, {
+            upsert: false
+        })
         .catch(err => {
             console.error('cannot unreserve all books, error:', err)
         })
