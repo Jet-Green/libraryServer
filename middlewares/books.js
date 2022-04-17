@@ -233,6 +233,7 @@ function clearBooks(request, response) {
 }
 
 function unreserveAllBooks(request, response) {
+    // UPDATE BOOK
     const books = getBooks()
     let now = Date.now()
     books.updateMany({
@@ -245,8 +246,8 @@ function unreserveAllBooks(request, response) {
         }, {
             $set: {
                 "Status": "На месте",
-                "DateOfGivenOut": "",
-                "TemporaryOwner": "",
+                // "DateOfGivenOut": "",
+                // "TemporaryOwner": "",
                 "ReservedQueue": "",
                 "DateOfReserved": ""
             }
@@ -256,6 +257,47 @@ function unreserveAllBooks(request, response) {
         .catch(err => {
             console.error('cannot unreserve all books, error:', err)
         })
+    // UPDATE USER ???
+
+}
+
+function unreserveOneBook(req, res) {
+
+
+    // UPDATE BOOK
+    getBooks().updateOne({
+            'Id': {
+                $eq: req.body.BookId
+            }
+        }, {
+            $set: {
+                "Status": "На месте",
+                "ReservedQueue": "",
+                "DateOfReserved": ""
+            }
+        }, {
+            upsert: false
+        })
+        .catch(err => {
+            console.error('cannot unreserve all books, error:', err)
+        })
+    // UPDATE USER
+
+    getUsers().updateOne({
+        "Contacts.Email": {
+            $eq: req.body.UserEmail
+        }
+    }, {
+        $set: {
+            'CurrentReservedBooks': ''
+        }
+    }, {
+        upsert: false
+    }).catch(err => {
+        console.error('cannot update user, error: ', err)
+    }).then(() => {res.send('OK')})
+    
+
 }
 
 module.exports = {
@@ -266,5 +308,6 @@ module.exports = {
     updateBook,
     changeBooksState,
     clearBooks,
-    unreserveAllBooks
+    unreserveAllBooks,
+    unreserveOneBook
 }

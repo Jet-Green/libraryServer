@@ -24,6 +24,7 @@ const booksMethods = require('./middlewares/books')
 
 app.get('/api/books/get-all', booksMethods.getAllBooks)
 app.post('/api/books/unreserve-all', booksMethods.unreserveAllBooks)
+app.post('/api/books/unreserve-one', booksMethods.unreserveOneBook)
 app.post('/api/books/delete-by-id', booksMethods.deleteBookById)
 app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/create', booksMethods.createBook)
