@@ -1,6 +1,8 @@
 FROM node:13
-# WORKDIR /usr/src/app
-COPY package*.json ./
+
+# WORKDIR /app
+
+COPY . .
 
 RUN npm install
 # If you are building your code for production
