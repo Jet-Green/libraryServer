@@ -45,10 +45,12 @@ function deleteBookById(request, response) {
 
 function getBookById(request, response) {
 
-  getBooks().find({
-    Id: Number(request.body.id)
-  }).toArray(function (err, documents) {
-
+  getBooks().findOne({
+    'Id': {
+      $eq: Number(request.body.id)
+    }
+  }
+  ).toArray(function (err, documents) {
     response.send(JSON.stringify(documents));
   })
 }
