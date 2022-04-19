@@ -33,10 +33,10 @@ function deleteBookById(request, response) {
   let id = request.body.id
 
   books.deleteOne({
-    Id: {
-      $eq: id
-    }
-  })
+      Id: {
+        $eq: id
+      }
+    })
     .then((r) => {
       response.send(r)
     })
@@ -67,13 +67,13 @@ function updateBook(request, response) {
   let id = request.body.id;
 
   books.updateOne({
-    'Id': {
-      $eq: id
-    }
-  },
+      'Id': {
+        $eq: id
+      }
+    },
     setupOptions, {
-    upsert: false
-  }
+      upsert: false
+    }
   ).catch((err) => console.error('cannot update book, error: ', err))
 }
 
@@ -113,18 +113,18 @@ async function changeBooksState(req, response) {
 
       // UPDATE BOOK
       books.updateOne({
-        'Id': {
-          $eq: event.BookId
-        }
-      }, {
-        $set: {
-          "Status": event.BookStatus,
-          "ReservedQueue": event.UserEmail,
-          "DateOfReserved": event.TimeStamp
-        }
-      }, {
-        upsert: false
-      })
+          'Id': {
+            $eq: event.BookId
+          }
+        }, {
+          $set: {
+            "Status": event.BookStatus,
+            "ReservedQueue": event.UserEmail,
+            "DateOfReserved": event.TimeStamp
+          }
+        }, {
+          upsert: false
+        })
         .then((res) => response.send('OK'))
         .catch((err) => {
           console.error(err)
@@ -155,20 +155,20 @@ async function changeBooksState(req, response) {
 
       // UPDATE BOOK
       books.updateOne({
-        'Id': {
-          $eq: event.BookId
-        }
-      }, {
-        $set: {
-          "Status": event.BookStatus,
-          "TemporaryOwner": event.UserEmail,
-          "DateOfGivenOut": event.TimeStamp,
-          'ReservedQueue': '',
-          'DateOfReserved': ''
-        }
-      }, {
-        upsert: false
-      })
+          'Id': {
+            $eq: event.BookId
+          }
+        }, {
+          $set: {
+            "Status": event.BookStatus,
+            "TemporaryOwner": event.UserEmail,
+            "DateOfGivenOut": event.TimeStamp,
+            'ReservedQueue': '',
+            'DateOfReserved': ''
+          }
+        }, {
+          upsert: false
+        })
         .then((res) => response.send('OK'))
         .catch((err) => {
           console.error(err)
@@ -197,20 +197,20 @@ async function changeBooksState(req, response) {
 
       // UPDATE BOOK
       books.updateOne({
-        'Id': {
-          $eq: event.BookId
-        }
-      }, {
-        $set: {
-          "Status": event.BookStatus,
-          "TemporaryOwner": '',
-          "DateOfGivenOut": '',
-          "ReservedQueue": '',
-          "DateOfReserved": ''
-        }
-      }, {
-        upsert: false
-      })
+          'Id': {
+            $eq: event.BookId
+          }
+        }, {
+          $set: {
+            "Status": event.BookStatus,
+            "TemporaryOwner": '',
+            "DateOfGivenOut": '',
+            "ReservedQueue": '',
+            "DateOfReserved": ''
+          }
+        }, {
+          upsert: false
+        })
         .then((res) => response.send('OK'))
         .catch((err) => {
           console.error('cannot update book, error: ', err)
@@ -236,55 +236,53 @@ function unreserveAllBooks(request, response) {
   // UPDATE BOOKS
   const books = getBooks()
   let now = Date.now()
-  books.find(
-    {
-      $and: [
-        {
-          $expr: {
-            $lt: [
-              now - Number('$DateOfReserved'),
-              // 3 days
-              1000 * 60 * 60 * 24 * 3
-            ]
-          }
-        },
-        { 'DateOfReserved': { $ne: "" } }
-      ]
+  books.find({
+    $and: [{
+        $expr: {
+          $lt: [
+            now - Number('$DateOfReserved'),
+            // 3 days
+            1000 * 60 * 60 * 24 * 3
+          ]
+        }
+      },
+      {
+        'DateOfReserved': {
+          $ne: ""
+        }
+      }
+    ]
 
-    }
-  ).toArray(function (err, documents) {
+  }).toArray(function (err, documents) {
     // HERE WE WILL UPDATE BOOKS AND USERS
     for (doc of documents) {
       let id = doc.Id
       let email = doc.ReservedQueue
-      books.updateOne(
-        {
-          "Id":
-            { $eq: id }
-        },
-        {
-          $set: {
-            "Status": "На месте",
-            "ReservedQueue": "",
-            "DateOfReserved": ""
-          }
-        },
-        {
-          upsert: false
-        })
+      books.updateOne({
+        "Id": {
+          $eq: id
+        }
+      }, {
+        $set: {
+          "Status": "На месте",
+          "ReservedQueue": "",
+          "DateOfReserved": ""
+        }
+      }, {
+        upsert: false
+      })
 
       getUsers().updateOne({
-        "Contacts.Email":
-          { $eq: email }
-      },
-        {
-          $set: {
-            'CurrentReservedBooks': ''
-          }
-        }, {
+        "Contacts.Email": {
+          $eq: email
+        }
+      }, {
+        $set: {
+          'CurrentReservedBooks': ''
+        }
+      }, {
         upsert: false
-      }
-      )
+      })
     }
   });
 
@@ -293,18 +291,18 @@ function unreserveAllBooks(request, response) {
 function unreserveOneBook(req, res) {
   // UPDATE BOOK
   getBooks().updateOne({
-    'Id': {
-      $eq: req.body.BookId
-    }
-  }, {
-    $set: {
-      "Status": "На месте",
-      "ReservedQueue": "",
-      "DateOfReserved": ""
-    }
-  }, {
-    upsert: false
-  })
+      'Id': {
+        $eq: req.body.BookId
+      }
+    }, {
+      $set: {
+        "Status": "На месте",
+        "ReservedQueue": "",
+        "DateOfReserved": ""
+      }
+    }, {
+      upsert: false
+    })
     .catch(err => {
       console.error('cannot unreserve all books, error:', err)
     })
@@ -322,7 +320,9 @@ function unreserveOneBook(req, res) {
     upsert: false
   }).catch(err => {
     console.error('cannot update user, error: ', err)
-  }).then(() => { res.send('OK') })
+  }).then(() => {
+    res.send('OK')
+  })
 
 
 }
