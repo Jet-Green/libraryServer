@@ -1,3 +1,6 @@
+const PORT = 3000
+const HOST = '0.0.0.0'
+
 let express = require('express')
 let cors = require('cors')
 const helmet = require("helmet");
@@ -49,7 +52,7 @@ app.put('/api/users/update', userMethods.updateUser)
 app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
-const PORT = 3000
-app.listen(PORT, function () {
+
+app.listen(PORT, HOST, function () {
     console.log(`App is listening on port ${PORT}`)
 })
