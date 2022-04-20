@@ -10,13 +10,13 @@ const helmet = require("helmet");
 
 const app = express()
 
-// let credentials = {
-//     key: fs.readFileSync('./server.key', 'utf8'),
-//     cert: fs.readFileSync('./server.crt', 'utf8')
-// };
-// let httpsServer = https.createServer(credentials, app);
+let credentials = {
+    key: fs.readFileSync('./server.key', 'utf8'),
+    cert: fs.readFileSync('./server.crt', 'utf8')
+};
+let httpsServer = https.createServer(credentials, app);
 
-let httpsServer = https.createServer(app);
+// let httpsServer = https.createServer(app);
 
 // const corsOptions = {
 //     "origin": 'http://localhost:8080/'
