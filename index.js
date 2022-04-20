@@ -3,20 +3,29 @@ const HOST = '0.0.0.0'
 
 let express = require('express')
 let cors = require('cors')
+let fs = require('fs');
+let https = require('https');
+
 const helmet = require("helmet");
-
-
-const corsOptions = {
-    "origin": 'http://localhost:8080/'
-}
 
 const app = express()
 
+// let credentials = {
+//     key: fs.readFileSync('./server.key', 'utf8'),
+//     cert: fs.readFileSync('./server.crt', 'utf8')
+// };
+// let httpsServer = https.createServer(credentials, app);
+
+let httpsServer = https.createServer(app);
+
+// const corsOptions = {
+//     "origin": 'http://localhost:8080/'
+// }
+
+
+
 app.use(helmet())
-app.use(cors({
-    origin: 'http://localhost:8080',
-}
-))
+app.use(cors())
 app.use(express.urlencoded({
     extended: true
 }))
@@ -53,6 +62,15 @@ app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
 
-app.listen(PORT, HOST, function () {
+// app.listen(PORT, HOST, function () {
+//     console.log(`App is listening on port ${PORT}`)
+// })
+
+// your express configuration here
+
+
+
+
+httpsServer.listen(PORT, HOST, function () {
     console.log(`App is listening on port ${PORT}`)
-})
+});
