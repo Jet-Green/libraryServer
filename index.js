@@ -6,8 +6,8 @@ let express = require('express')
 let cors = require('cors')
 let fs = require('fs');
 let https = require('https');
-var serveStatic = require('serve-static')
-var path = require('path')
+
+
 
 const helmet = require("helmet");
 
