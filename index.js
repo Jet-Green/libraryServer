@@ -1,10 +1,13 @@
-const PORT = 3000
+const HTTPSPORT = 3100
+const HTTPPORT = 3000
 const HOST = '0.0.0.0'
 
 let express = require('express')
 let cors = require('cors')
 let fs = require('fs');
 let https = require('https');
+var serveStatic = require('serve-static')
+var path = require('path')
 
 const helmet = require("helmet");
 
@@ -30,6 +33,7 @@ app.use(express.urlencoded({
     extended: true
 }))
 app.use(express.json())
+app.use(express.static('public'))
 
 
 const booksMethods = require('./middlewares/books')
@@ -62,15 +66,16 @@ app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
 
-// app.listen(PORT, HOST, function () {
-//     console.log(`App is listening on port ${PORT}`)
-// })
+
+app.listen(HTTPPORT, HOST, function () {
+    console.log(`App is listening on port ${HTTPPORT}`)
+})
 
 // your express configuration here
 
 
 
 
-httpsServer.listen(PORT, HOST, function () {
-    console.log(`App is listening on port ${PORT}`)
+httpsServer.listen(HTTPSPORT, HOST, function () {
+    console.log(`App is listening on port ${HTTPSPORT}`)
 });
