@@ -6,6 +6,7 @@ let express = require('express')
 let cors = require('cors')
 let fs = require('fs');
 let https = require('https');
+let http = require('http');
 
 
 
@@ -15,11 +16,14 @@ const app = express()
 
 let credentials = {
     key: fs.readFileSync('./server.key', 'utf8'),
-    cert: fs.readFileSync('./server.crt', 'utf8')
+    cert: fs.readFileSync('./server.crt', 'utf8'),
+    ca: [
+        fs.readFileSync('./ca_bundle.crt')
+    ]
 };
 let httpsServer = https.createServer(credentials, app);
 
-// let httpsServer = https.createServer(app);
+let httpServer = http.createServer(app);
 
 // const corsOptions = {
 //     "origin": 'http://localhost:8080/'
@@ -67,15 +71,17 @@ app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
 
-app.listen(HTTPPORT, HOST, function () {
-    console.log(`App is listening on port ${HTTPPORT}`)
-})
+// app.listen(HTTPPORT, HOST, function () {
+//     console.log(`App is listening on HTTP port ${HTTPPORT}`)
+// })
 
 // your express configuration here
 
 
-
+httpServer.listen(HTTPPORT, HOST, function () {
+    console.log(`App is listening on HTTP port ${HTTPPORT}`)
+});
 
 httpsServer.listen(HTTPSPORT, HOST, function () {
-    console.log(`App is listening on port ${HTTPSPORT}`)
+    console.log(`App is listening on HTTPS port ${HTTPSPORT}`)
 });
