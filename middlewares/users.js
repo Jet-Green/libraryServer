@@ -1,4 +1,6 @@
-const { getUsers } = require('../mongo')
+const {
+    getUsers
+} = require('../mongo')
 
 function getAllUsers(requset, response) {
     const users = getUsers()
@@ -11,7 +13,13 @@ function getAllUsers(requset, response) {
 function createUser(request, response) {
     const users = getUsers()
 
-    users.insertOne(request.body).catch((err) => { console.error('cannot create user, error: ', err) })
+    users.insertOne(request.body).then((r) => {
+       
+        response.send('OK')
+    }).catch((err) => {
+        console.error(err)
+        response.send(err)
+    })
 }
 
 function clearUsers(request, response) {
@@ -34,14 +42,14 @@ function updateUser(request, response) {
     /**
      * Добавить проверку наличия пользователя
      */
-    users.updateOne(
-        {
+    users.updateOne({
             "Contacts.Email": {
                 $eq: Email
             }
         },
-        setupOptions,
-        { upsert: false }
+        setupOptions, {
+            upsert: false
+        }
     ).then(function (r) {
         // console.log('user succesfully updated', r)
         response.send(r)
