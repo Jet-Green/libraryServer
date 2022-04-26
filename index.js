@@ -12,11 +12,7 @@ let https = require('https');
 let http = require('http');
 
 
-const corsOptions = {
-    "origin": 'http://localhost:8080/'
-}
 const csrfProtection = csurf({ cookie: true })
-
 
 const helmet = require("helmet");
 
@@ -78,11 +74,6 @@ app.put('/api/users/update', userMethods.updateUser)
 app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
-
-
-// app.listen(HTTPPORT, HOST, function () {
-//     console.log(`App is listening on HTTP port ${HTTPPORT}`)
-// })
 
 // your express configuration here
 
