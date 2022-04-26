@@ -1,29 +1,41 @@
 const PORT = 3000
 const HOST = '0.0.0.0'
 
-let express = require('express')
-let cors = require('cors')
+const express = require('express')
+const cors = require('cors')
 const helmet = require("helmet");
+const cookieParser = require('cookie-parser')
+const csurf = require('csurf')
+
 
 
 const corsOptions = {
     "origin": 'http://localhost:8080/'
 }
+const csrfProtection = csurf({ cookie: true })
+
+
 
 const app = express()
 
 app.use(helmet())
 app.use(cors({
     origin: 'http://localhost:8080',
-}
-))
+}))
+app.use(cookieParser())
 app.use(express.urlencoded({
     extended: true
 }))
 app.use(express.json())
 
 
+app.get('/csrf', csrfProtection, function (request, response) {
+    response.send({ 'csrfToken': request.csrfToken() })
+})
+
+
 const booksMethods = require('./middlewares/books')
+
 
 app.get('/api/books/get-all', booksMethods.getAllBooks)
 app.post('/api/books/unreserve-all', booksMethods.unreserveAllBooks)
