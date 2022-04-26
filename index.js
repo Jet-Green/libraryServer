@@ -1,12 +1,15 @@
-const PORT = 3000
+const HTTPSPORT = 3100
+const HTTPPORT = 3000
 const HOST = '0.0.0.0'
 
 const express = require('express')
 const cors = require('cors')
+let fs = require('fs');
 const helmet = require("helmet");
 const cookieParser = require('cookie-parser')
 const csurf = require('csurf')
-
+let https = require('https');
+let http = require('http');
 
 
 const corsOptions = {
@@ -15,18 +18,29 @@ const corsOptions = {
 const csrfProtection = csurf({ cookie: true })
 
 
+const helmet = require("helmet");
 
 const app = express()
 
+let credentials = {
+    key: fs.readFileSync('./server.key', 'utf8'),
+    cert: fs.readFileSync('./server.crt', 'utf8'),
+    ca: [
+        fs.readFileSync('./ca_bundle.crt')
+    ]
+};
+let httpsServer = https.createServer(credentials, app);
+
+let httpServer = http.createServer(app);
+
 app.use(helmet())
-app.use(cors({
-    origin: 'http://localhost:8080',
-}))
+app.use(cors())
 app.use(cookieParser())
 app.use(express.urlencoded({
     extended: true
 }))
 app.use(express.json())
+app.use(express.static('public'))
 
 
 app.get('/csrf', csrfProtection, function (request, response) {
@@ -65,6 +79,18 @@ app.post('/api/users/get-by-email', userMethods.getUserByEmail)
 
 
 
-app.listen(PORT, HOST, function () {
-    console.log(`App is listening on port ${PORT}`)
-})
+
+// app.listen(HTTPPORT, HOST, function () {
+//     console.log(`App is listening on HTTP port ${HTTPPORT}`)
+// })
+
+// your express configuration here
+
+
+httpServer.listen(HTTPPORT, HOST, function () {
+    console.log(`App is listening on HTTP port ${HTTPPORT}`)
+});
+
+httpsServer.listen(HTTPSPORT, HOST, function () {
+    console.log(`App is listening on HTTPS port ${HTTPSPORT}`)
+});

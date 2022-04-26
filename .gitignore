@@ -2,6 +2,9 @@
 node_modules
 /dist
 password.js
+server.crt
+server.key
+ca_bundle.crt
 
 # local env files
 .env.local
