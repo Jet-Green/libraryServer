@@ -7,12 +7,12 @@ const cors = require('cors')
 let fs = require('fs');
 const helmet = require("helmet");
 const cookieParser = require('cookie-parser')
-const csurf = require('csurf')
+// const csurf = require('csurf')
 let https = require('https');
 let http = require('http');
 
 
-const csrfProtection = csurf({ cookie: true })
+// const csrfProtection = csurf({ cookie: true })
 
 
 
@@ -39,9 +39,9 @@ app.use(express.json())
 app.use(express.static('public'))
 
 
-app.get('/csrf', csrfProtection, function (request, response) {
-    response.send({ 'csrfToken': request.csrfToken() })
-})
+// app.get('/csrf', csrfProtection, function (request, response) {
+//     response.send({ 'csrfToken': request.csrfToken() })
+// })
 
 
 const booksMethods = require('./middlewares/books')
