@@ -14,8 +14,6 @@ let http = require('http');
 
 
 
-
-
 const app = express()
 
 let credentials = {
@@ -30,7 +28,11 @@ let httpsServer = https.createServer(credentials, app);
 let httpServer = http.createServer(app);
 
 app.use(helmet())
-app.use(cors())
+app.use(cors({
+    origin: 'https://lib.qbit-club.com'
+}
+    
+))
 app.use(cookieParser())
 app.use(express.urlencoded({
     extended: true
