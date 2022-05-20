@@ -13,11 +13,13 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
     "helmet": "^5.0.2",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.5.0"
   }
 }

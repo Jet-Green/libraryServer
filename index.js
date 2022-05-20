@@ -12,7 +12,7 @@ let https = require('https');
 let http = require('http');
 
 
-// const csrfProtection = csurf({ cookie: true })
+
 
 
 
@@ -30,33 +30,49 @@ let httpsServer = https.createServer(credentials, app);
 let httpServer = http.createServer(app);
 
 app.use(helmet())
-app.use(cors({
-    origin: 'https://lib.qbit-club.com'
-}))
+app.use(cors())
 app.use(cookieParser())
 app.use(express.urlencoded({
     extended: true
 }))
 app.use(express.json())
-app.use(express.static('public'))
+// app.use(express.static('public'))
 
 
-// app.get('/csrf', csrfProtection, function (request, response) {
-//     response.send({ 'csrfToken': request.csrfToken() })
-// })
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
+process.env.TOKEN_SECRET;
+
+function generateAccessToken(app) {
+    return jwt.sign(app, process.env.TOKEN_SECRET, {
+        expiresIn: '30000s'
+    });
+}
+
+app.get('/', (req, res) => {
+    const token = generateAccessToken({
+        app: "library"
+    });
+    res.json(token);
+});
+
 
 
 const booksMethods = require('./middlewares/books')
+const authenticateToken = require('./middlewares/authenticateToken')
 
 
-app.get('/api/books/get-all', booksMethods.getAllBooks)
-app.post('/api/books/unreserve-all', booksMethods.unreserveAllBooks)
-app.post('/api/books/unreserve-one', booksMethods.unreserveOneBook)
-app.post('/api/books/delete-by-id', booksMethods.deleteBookById)
-app.post('/api/books/get-by-id', booksMethods.getBookById)
-app.post('/api/books/create', booksMethods.createBook)
-app.put('/api/books/update', booksMethods.updateBook)
-app.put('/api/books/change-state', booksMethods.changeBooksState)
+app.get('/api/books/get-all', authenticateToken, booksMethods.getAllBooks)
+app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
+app.post('/api/books/unreserve-all', authenticateToken, booksMethods.unreserveAllBooks)
+app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
+app.post('/api/books/unreserve-one', authenticateToken, booksMethods.unreserveOneBook)
+app.post('/api/books/delete-by-id',authenticateToken, booksMethods.deleteBookById)
+app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
+app.post('/api/books/create',authenticateToken, booksMethods.createBook)
+app.put('/api/books/update', authenticateToken, booksMethods.updateBook)
+app.put('/api/books/change-state', authenticateToken,  booksMethods.changeBooksState)
 app.get('/api/books/clear', booksMethods.clearBooks) // disabled for security
 
 
@@ -69,11 +85,11 @@ app.get('/api/bookflow/clear', bookflowMethods.clearBookflow) // disabled for se
 
 const userMethods = require('./middlewares/users')
 
-app.get('/api/users/get-all', userMethods.getAllUsers)
-app.post('/api/users/create', userMethods.createUser)
-app.get('/api/users/clear', userMethods.clearUsers) // disabled for security
-app.put('/api/users/update', userMethods.updateUser)
-app.post('/api/users/get-by-email', userMethods.getUserByEmail)
+app.get('/api/users/get-all', authenticateToken, userMethods.getAllUsers)
+app.post('/api/users/create', authenticateToken, userMethods.createUser)
+app.get('/api/users/clear', authenticateToken, userMethods.clearUsers) // disabled for security
+app.put('/api/users/update', authenticateToken, userMethods.updateUser)
+app.post('/api/users/get-by-email', authenticateToken, userMethods.getUserByEmail)
 
 
 
