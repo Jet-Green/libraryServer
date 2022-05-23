@@ -66,12 +66,10 @@ const authenticateToken = require('./middlewares/authenticateToken')
 
 
 app.get('/api/books/get-all', authenticateToken, booksMethods.getAllBooks)
-app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
+app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/unreserve-all', authenticateToken, booksMethods.unreserveAllBooks)
-app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
 app.post('/api/books/unreserve-one', authenticateToken, booksMethods.unreserveOneBook)
 app.post('/api/books/delete-by-id',authenticateToken, booksMethods.deleteBookById)
-app.post('/api/books/get-by-id', authenticateToken, booksMethods.getBookById)
 app.post('/api/books/create',authenticateToken, booksMethods.createBook)
 app.put('/api/books/update', authenticateToken, booksMethods.updateBook)
 app.put('/api/books/change-state', authenticateToken,  booksMethods.changeBooksState)
