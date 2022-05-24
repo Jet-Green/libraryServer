@@ -65,7 +65,7 @@ const booksMethods = require('./middlewares/books')
 const authenticateToken = require('./middlewares/authenticateToken')
 
 
-app.get('/api/books/get-all', booksMethods.getAllBooks)
+app.get('/api/books/get-all', authenticateToken, booksMethods.getAllBooks)
 app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/unreserve-all', authenticateToken, booksMethods.unreserveAllBooks)
 app.post('/api/books/unreserve-one', authenticateToken, booksMethods.unreserveOneBook)
