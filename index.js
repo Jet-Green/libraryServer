@@ -65,7 +65,7 @@ const booksMethods = require('./middlewares/books')
 const authenticateToken = require('./middlewares/authenticateToken')
 
 
-app.get('/api/books/get-all', authenticateToken, booksMethods.getAllBooks)
+app.get('/api/books/get-all', booksMethods.getAllBooks)
 app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/unreserve-all', authenticateToken, booksMethods.unreserveAllBooks)
 app.post('/api/books/unreserve-one', authenticateToken, booksMethods.unreserveOneBook)
@@ -78,8 +78,8 @@ app.get('/api/books/clear', booksMethods.clearBooks) // disabled for security
 
 const bookflowMethods = require('./middlewares/bookflow')
 
-app.get('/api/bookflow/get-all', bookflowMethods.getAllBookflow)
-app.post('/api/bookflow/create', bookflowMethods.createBookflow)
+app.get('/api/bookflow/get-all', authenticateToken, bookflowMethods.getAllBookflow)
+app.post('/api/bookflow/create', authenticateToken, bookflowMethods.createBookflow)
 app.get('/api/bookflow/clear', bookflowMethods.clearBookflow) // disabled for security
 
 
