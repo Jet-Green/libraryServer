@@ -12,8 +12,6 @@ let https = require('https');
 let http = require('http');
 
 
-
-
 const app = express()
 
 let credentials = {
@@ -28,11 +26,19 @@ let httpsServer = https.createServer(credentials, app);
 let httpServer = http.createServer(app);
 
 app.use(helmet())
-app.use(cors({
-    origin: 'https://lib.qbit-club.com'
+
+var whitelist = ['https://lib.qbit-club.com', 'https://proviant.store', 'http://summer.qbit-club.com']
+var corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
 }
-    
-))
+
+app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.urlencoded({
     extended: true
@@ -69,10 +75,10 @@ app.get('/api/books/get-all', authenticateToken, booksMethods.getAllBooks)
 app.post('/api/books/get-by-id', booksMethods.getBookById)
 app.post('/api/books/unreserve-all', authenticateToken, booksMethods.unreserveAllBooks)
 app.post('/api/books/unreserve-one', authenticateToken, booksMethods.unreserveOneBook)
-app.post('/api/books/delete-by-id',authenticateToken, booksMethods.deleteBookById)
-app.post('/api/books/create',authenticateToken, booksMethods.createBook)
+app.post('/api/books/delete-by-id', authenticateToken, booksMethods.deleteBookById)
+app.post('/api/books/create', authenticateToken, booksMethods.createBook)
 app.put('/api/books/update', authenticateToken, booksMethods.updateBook)
-app.put('/api/books/change-state', authenticateToken,  booksMethods.changeBooksState)
+app.put('/api/books/change-state', authenticateToken, booksMethods.changeBooksState)
 app.get('/api/books/clear', booksMethods.clearBooks) // disabled for security
 
 
@@ -92,10 +98,13 @@ app.put('/api/users/update', authenticateToken, userMethods.updateUser)
 app.post('/api/users/get-by-email', authenticateToken, userMethods.getUserByEmail)
 
 
+//nodemailer api
+const nodemailerMethods = require('./middlewares/nodemailer.js')
 
-// your express configuration here
+app.post('/api/proviant', nodemailerMethods.proviant)
+app.post('/api/summer', nodemailerMethods.summer)
 
-
+// server start
 httpServer.listen(HTTPPORT, HOST, function () {
     console.log(`App is listening on HTTP port ${HTTPPORT}`)
 });
