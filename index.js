@@ -1,5 +1,5 @@
 const HTTPSPORT = 3100
-const HTTPPORT = 3000
+const HTTPPORT = 3200
 const HOST = '0.0.0.0'
 
 const express = require('express')
@@ -27,7 +27,7 @@ let httpServer = http.createServer(app);
 
 app.use(helmet())
 
-var whitelist = ['https://lib.qbit-club.com', 'https://proviant.store', 'http://summer.qbit-club.com']
+var whitelist = ['https://lib.qbit-club.com', 'https://proviant.store', 'https://summer.qbit-club.com']
 var corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {

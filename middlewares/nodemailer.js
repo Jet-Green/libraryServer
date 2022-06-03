@@ -65,10 +65,8 @@ const proviant = (request, response) => {
 }
 
 const summer = (request, response) => {
-
-    const newValue = JSON.stringify(request.body);
     var order = request.body;
-    var phone = order.delivery_info.phone.replace(/\D/g, '')
+    var phone = order.phone.replace(/\D/g, '')
     phone[0] === "8" ? phone : phone[0] === "7" ? phone : phone = "8" + phone
 
     var html = ejs.render(`' 
