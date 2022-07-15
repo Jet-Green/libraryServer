@@ -15,8 +15,8 @@ let http = require('http');
 const app = express()
 
 let credentials = {
-    key: fs.readFileSync('./server.key', 'utf8'),
-    cert: fs.readFileSync('./server.crt', 'utf8'),
+    key: fs.readFileSync('./private.key', 'utf8'),
+    cert: fs.readFileSync('./certificate.crt', 'utf8'),
     ca: [
         fs.readFileSync('./ca_bundle.crt')
     ]
