@@ -27,7 +27,7 @@ let httpServer = http.createServer(app);
 
 app.use(helmet())
 
-var whitelist = ['https://lib.qbit-club.com', 'https://proviant.store', 'https://summer.qbit-club.com']
+var whitelist = ['https://lib.qbit-club.com', 'https://proviant.store', 'https://summer.qbit-club.com', 'https://qbit-club.com']
 var corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
